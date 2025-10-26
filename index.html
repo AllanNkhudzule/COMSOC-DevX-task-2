@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Devx User Management GUI</title>
+</head>
+<body>
+  <h1>Devx User Management System</h1>
+
+  <div>
+    <button onclick="showUsers()">1. Show available users</button>
+    <button onclick="showCreateForm()">2. Create a new user</button>
+    <button onclick="showDeleteForm()">3. Delete user</button>
+    <button onclick="showEditForm()">4. Edit user</button>
+    <button onclick="showSearchForm()">5. Search user</button>
+  </div>
+
+  <hr>
+
+  <div id="formArea"></div>
+  <div id="output"></div>
+
+  <script>
+    // Simulated database
+    let users = [];
+
+    //Show all users
+    function showUsers() {
+      const output = document.getElementById("output");
+      if (users.length === 0) {
+        output.innerHTML = "<p>No users found.</p>";
+        return;
+      }
+      output.innerHTML = "<h3>Available Users:</h3>";
+      users.forEach((user, i) => {
+        output.innerHTML += `<p>${i + 1}. ${JSON.stringify(user)}</p>`;
+      });
+    }
+
+    //Create user form
+    function showCreateForm() {
+      document.getElementById("formArea").innerHTML = `
+        <h3>Create New User</h3>
+        <input id="name" placeholder="Name"><br>
+        <input id="username" placeholder="Username"><br>
+        <input id="email" placeholder="Email"><br>
+        <input id="dob" type="date"><br>
+        <button onclick="createUser()">Add User</button>
+      `;
+    }
+
+    function createUser() {
+      const name = document.getElementById("name").value;
+      const username = document.getElementById("username").value;
+      const email = document.getElementById("email").value;
+      const dob = document.getElementById("dob").value;
+
+      users.push({ name, username, email, dob });
+      document.getElementById("output").innerHTML = "<p>User added successfully!</p>";
+      document.getElementById("formArea").innerHTML = "";
+    }
+
+    // Delete user form
+    function showDeleteForm() {
+      document.getElementById("formArea").innerHTML = `
+        <h3>Delete User</h3>
+        <input id="delUsername" placeholder="Enter username to delete"><br>
+        <button onclick="deleteUser()">Delete</button>
+      `;
+    }
+
+    function deleteUser() {
+      const username = document.getElementById("delUsername").value;
+      const index = users.findIndex(u => u.username === username);
+      if (index !== -1) {
+        users.splice(index, 1);
+        document.getElementById("output").innerHTML = "<p>User deleted successfully!</p>";
+      } else {
+        document.getElementById("output").innerHTML = "<p>User not found.</p>";
+      }
+    }
+
+    //Edit user form
+    function showEditForm() {
+      document.getElementById("formArea").innerHTML = `
+        <h3>Edit User</h3>
+        <input id="editUsername" placeholder="Enter username to edit"><br>
+        <input id="field" placeholder="What do  you want to edit(name/email/dob)"><br>
+        <input id="newValue" placeholder="Enter new value"><br>
+        <button onclick="editUser()">Update</button>
+      `;
+
+      //automatically updating place holder
+    document.getElementById('field').addEventListener('input', () => {
+    const field = document.getElementById('field').value.trim();
+    const newValueInput = document.getElementById('newValue');
+    newValueInput.placeholder = field ? `Enter new ${field}` : 'Enter new value';
+  });
+    }
+
+    function editUser() {
+  const username = document.getElementById('username').value.trim();
+    const field = document.getElementById('field').value.trim();
+    const newValue = document.getElementById('newValue').value.trim();
+    const output = document.getElementById("output");
+
+    const user = users.find(u => u.username === username);
+
+    if (!user) {
+      output.innerHTML = "<p>User not found.</p>";
+      return;
+    }
+
+    // Check if the entered field exists in user object
+    if (field in user) {
+      user[field] = newValue;
+      output.innerHTML = `<p>${field} updated successfully for ${username}!</p>`;
+    } else {
+      output.innerHTML = `<p>Invalid field name. Please use 'name', 'email', or 'dob'.</p>`;
+    }
+    }
+
+    // Search user form
+    function showSearchForm() {
+      document.getElementById("formArea").innerHTML = `
+        <h3>Search User</h3>
+        <input id="searchUsername" placeholder="Enter username"><br>
+        <button onclick="searchUser()">Search</button>
+      `;
+    }
+
+    function searchUser() {
+      const username = document.getElementById("searchUsername").value;
+      const user = users.find(u => u.username === username);
+      if (user) {
+        document.getElementById("output").innerHTML = `<p>${JSON.stringify(user)}</p>`;
+      } else {
+        document.getElementById("output").innerHTML = "<p>User not found.</p>";
+      }
+    }
+  </script>
+</body>
+</html>
